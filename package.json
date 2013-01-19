@@ -1,0 +1,24 @@
+{
+  "name": "cheezburger",
+  "version": "0.0.1",
+  "description": "A module for interfacing with the cheezburger api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jesseditson/node-cheezburger.git"
+  },
+  "keywords": [
+    "cheezburger",
+    "meme",
+    "memes",
+    "api"
+  ],
+  "author": "Jesse Ditson <jesse.ditson@gmail.com>",
+  "license": "BSD",
+  "dependencies": {
+    "request": "~2.12.0"
+  }
+}
