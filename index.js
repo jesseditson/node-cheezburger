@@ -68,6 +68,10 @@ Cheezburger.prototype.sites = function(options,callback){
   } else if(options == "mine" || options == "my"){
     return this.mysites(callback)
   } else {
+    if(!callback){
+      callback = options
+      options = {}
+    }
     var params = validateOptions(['parent_site_id','site_type_id'],options)
     doRequest(['sites',params],parseResponse.bind(this,callback))
   }
