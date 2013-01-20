@@ -127,20 +127,32 @@ var getAccessToken = function(callback){
   })
 }
 // do request - wraps request, making sure an access token is available first.
+var initializing
+var requestQueue = []
 var doRequest = function(){
+  if(initializing) return requestQueue.push(arguments)
   var args = Array.prototype.slice.call(arguments)
   // callback is always last argument
   var callback = args[args.length-1]
   if(access_token){
+    initializing = false
     args[0] = getCheezburgerUrl.apply(this,args[0])
     request.apply(this,args)
   } else {
+    initializing = true
     cheezburger.log("No access token. Generating token.")
     getAccessToken.call(cheezburger,function(err){
-      cheezburger.log("Auto generated access token: " + access_token)
       if(err) return callback(err)
+      cheezburger.log("Auto generated access token: " + access_token)
+      initializing = false
       args[0] = getCheezburgerUrl.apply(this,args[0])
       request.apply(this,args)
+      if(requestQueue.length){
+        // handle backed up requests if multiple were made before access token was ready
+        requestQueue.forEach(function(rargs){
+          doRequest.apply(this,rargs)
+        })
+      }
     })
   }
 }
@@ -169,6 +181,7 @@ var parseResponse = function(callback,err,res){
 // get a cheezburger url - pass an array or string endpoint and an optional query.
 var getCheezburgerUrl = function(endpoint,query){
   if(typeof endpoint == "string") endpoint = [endpoint]
+  query = query || {}
   //if(!access_token) throw new Error("No Access Token set. Please set access token or pass access token in config.")
   if(!query.access_token) query.access_token = access_token
   var url = cheezburger_url + "/v1/" + endpoint.join('/') + "?" + qs.stringify(query)
